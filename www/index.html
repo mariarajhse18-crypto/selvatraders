@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#154621">
+<title>Selva Traders</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Hind+Madurai:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<!-- Shown only if the Firebase settings or files are missing -->
+<section class="auth" id="screen-config" hidden>
+  <div class="auth-card card">
+    <img class="auth-logo" src="logo.png" alt="">
+    <h2>Setup needed</h2>
+    <p id="configMsg" class="note-line"></p>
+  </div>
+</section>
+
+<!-- Sign in / first-time owner setup -->
+<section class="auth" id="screen-login" hidden>
+  <div class="auth-card card">
+    <img class="auth-logo" src="logo.png" alt="Selva Traders Crop Insurance 2026 emblem">
+    <h2 id="authTitle">Sign in</h2>
+
+    <form class="stack" id="loginForm" novalidate>
+      <div class="field"><label for="l-id">ID</label><input type="text" id="l-id" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="24"></div>
+      <div class="field"><label for="l-pw">Password</label>
+        <div class="pwrow"><input type="password" id="l-pw" autocomplete="current-password" maxlength="64"><button type="button" class="btn sm" data-showpw="l-pw">Show</button></div></div>
+      <div class="msg bad" id="loginMsg" role="alert"></div>
+      <button class="btn primary" type="submit" id="loginBtn">Sign in</button>
+    </form>
+
+    <form class="stack" id="setupForm" novalidate hidden>
+      <p class="note-line">This is the first time the app is opened. Create the owner account. You will add agents from the Team tab afterwards.</p>
+      <div class="field"><label for="o-name">Your name</label><input type="text" id="o-name" autocomplete="name" maxlength="60"></div>
+      <div class="field"><label for="o-id">Owner ID</label><input type="text" id="o-id" value="owner" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="24"></div>
+      <div class="field"><label for="o-pw">Password <span class="opt">at least 8 characters</span></label>
+        <div class="pwrow"><input type="password" id="o-pw" autocomplete="new-password" maxlength="64"><button type="button" class="btn sm" data-showpw="o-pw">Show</button></div></div>
+      <div class="field"><label for="o-pw2">Type the password again</label><input type="password" id="o-pw2" autocomplete="new-password" maxlength="64"></div>
+      <div class="msg bad" id="setupMsg" role="alert"></div>
+      <button class="btn primary" type="submit" id="setupBtn">Create owner account</button>
+    </form>
+
+    <button class="btn linkish" type="button" id="toSetup" hidden>First time? Set up the owner account</button>
+    <button class="btn linkish" type="button" id="toLogin" hidden>Back to sign in</button>
+    <p class="note-line center">Lost your password? Ask the owner for a new ID.</p>
+  </div>
+</section>
+
+<!-- The app -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="in">
+      <div class="row">
+        <div class="brand">
+          <img src="logo.png" alt="Selva Traders Crop Insurance 2026 emblem" width="46" height="47">
+          <div><b>Selva Traders</b><small>Crop Insurance 2026</small></div>
+        </div>
+        <span class="who" id="whoChip"></span>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab" data-tab="entry" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>New farmer</span></button>
+      <button class="tab" data-tab="records" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg><span>Records</span><b class="count" id="recCount"></b></button>
+      <button class="tab" data-tab="summary" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Summary</span></button>
+      <button class="tab" data-tab="team" type="button" id="teamTab" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.5a3 3 0 0 1 0 5.6M18 14.2c1.8.7 3 2.3 3 4.8"/></svg><span>Team</span></button>
+      <button class="tab" data-tab="tools" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01"/></svg><span>Tools</span></button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="banner" id="banner" role="status"></div>
+
+    <!-- NEW FARMER -->
+    <section class="view" id="view-entry" hidden>
+      <div class="head-row"><h2 id="entryTitle">New farmer</h2><span class="date-chip" id="todayChip"></span></div>
+      <div class="strip num" id="todayStrip"></div>
+      <div class="msg info" id="editBar" hidden></div>
+      <form class="stack" id="entryForm" novalidate>
+        <section class="card" aria-labelledby="h-farmer">
+          <h3 id="h-farmer">Farmer</h3>
+          <div class="grid2">
+            <div class="field"><label for="f-farmer">Farmer name</label><input type="text" id="f-farmer" autocomplete="off" maxlength="80"></div>
+            <div class="field"><label for="f-phone">Phone <span class="opt">optional</span></label><input type="tel" id="f-phone" inputmode="tel" autocomplete="off" placeholder="10-digit mobile" maxlength="16"></div>
+            <div class="field"><label for="f-village">Village</label><input type="text" id="f-village" list="villageList" autocomplete="off" maxlength="80"><datalist id="villageList"></datalist></div>
+            <div class="field"><label for="f-survey">Survey / Patta no. <span class="opt">optional</span></label><input type="text" id="f-survey" autocomplete="off" placeholder="e.g. 214/3B" maxlength="40"></div>
+            <div class="field"><label for="f-crop">Crop <span class="opt">optional</span></label>
+              <select id="f-crop"><option value="">Select crop</option><option>Paddy</option><option>Maize</option><option>Cotton</option><option>Groundnut</option><option>Black gram</option><option>Green gram</option><option>Banana</option><option>Sugarcane</option><option>Other</option></select></div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="h-land">
+          <h3 id="h-land">Land <small>as written on the Patta / Chitta</small></h3>
+          <div class="grid2">
+            <div class="field"><label for="f-land">Land area</label><input type="number" id="f-land" inputmode="decimal" step="0.01" min="0" placeholder="e.g. 10.4"></div>
+            <div class="field"><span class="lab" id="lab-unit">Unit</span>
+              <div class="seg" id="f-unit" role="radiogroup" aria-labelledby="lab-unit">
+                <button type="button" data-v="Acre">Acre</button><button type="button" data-v="Cent">Cent</button><button type="button" data-v="Hectare">Hectare</button>
+              </div></div>
+          </div>
+          <p class="preview num" id="landPreview"></p>
+        </section>
+
+        <section class="card" aria-labelledby="h-money">
+          <h3 id="h-money">Money</h3>
+          <div class="grid2">
+            <div class="field"><label for="f-coll">Collected from farmer</label><div class="money"><span>₹</span><input type="number" id="f-coll" inputmode="numeric" min="0" step="1" placeholder="e.g. 550"></div></div>
+            <div class="field"><span class="lab" id="lab-mode">Paid by</span>
+              <div class="seg" id="f-mode" role="radiogroup" aria-labelledby="lab-mode"><button type="button" data-v="Cash">Cash</button><button type="button" data-v="UPI">UPI</button></div></div>
+            <div class="field admin-only" hidden><label for="f-bill">Bill value <span class="opt">owner only</span></label><div class="money"><span>₹</span><input type="number" id="f-bill" inputmode="numeric" min="0" step="1" placeholder="e.g. 400"></div></div>
+          </div>
+          <p class="preview num admin-only" id="marginPreview" hidden></p>
+        </section>
+
+        <section class="card" aria-labelledby="h-docs">
+          <h3 id="h-docs">Papers received</h3>
+          <div class="chips" id="docChips"></div>
+          <p class="note-line" id="docNote"></p>
+          <div class="field"><label for="f-note">Note <span class="opt">optional</span></label><textarea id="f-note" maxlength="300" placeholder="Anything to follow up"></textarea></div>
+        </section>
+
+        <div class="msg bad" id="formMsg" role="alert"></div>
+        <div class="msg warn" id="dupMsg" role="alert"></div>
+        <button class="btn primary" type="submit" id="saveBtn">Save farmer</button>
+      </form>
+    </section>
+
+    <!-- RECORDS -->
+    <section class="view" id="view-records" hidden>
+      <div class="head-row"><h2>Records</h2><button class="btn sm" type="button" id="exportBtn">Export CSV</button></div>
+      <div class="filters">
+        <input type="search" id="r-q" placeholder="Search name, village, survey, phone" aria-label="Search records" autocomplete="off">
+        <div class="seg" id="r-period" role="radiogroup" aria-label="Period">
+          <button type="button" data-v="today">Today</button><button type="button" data-v="week">7 days</button><button type="button" data-v="all">All</button><button type="button" data-v="date">Pick date</button>
+        </div>
+        <div class="line">
+          <input type="date" id="r-date" aria-label="Date" hidden>
+          <select id="r-agent" aria-label="Agent"></select>
+          <select id="r-status" aria-label="Status"><option value="all">All statuses</option><option value="docs">Papers pending</option><option value="ready">Ready to submit</option><option value="submitted">Submitted</option><option value="issued">Policy issued</option></select>
+        </div>
+      </div>
+      <p class="strip num" id="recStrip"></p>
+      <div class="list" id="recList"></div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section class="view" id="view-summary" hidden>
+      <div class="head-row"><h2 id="sumTitle">Summary</h2><span class="date-chip" id="sumLabel"></span></div>
+      <div class="seg" id="s-period" role="radiogroup" aria-label="Period">
+        <button type="button" data-v="day">Day</button><button type="button" data-v="week">7 days</button><button type="button" data-v="all">Whole season</button>
+      </div>
+      <div class="datebar" id="s-datebar">
+        <button class="btn sm" type="button" id="s-prev" aria-label="Previous day">‹ Prev</button>
+        <input type="date" id="s-date" aria-label="Date">
+        <button class="btn sm" type="button" id="s-next" aria-label="Next day">Next ›</button>
+        <button class="btn sm" type="button" id="s-today">Today</button>
+      </div>
+      <div class="stats num" id="sumStats"></div>
+      <div id="sumAgents"></div>
+      <section class="card" id="sumVillagesCard"><h3>By village</h3><div class="vtable num" id="sumVillages"></div></section>
+    </section>
+
+    <!-- TEAM (owner only) -->
+    <section class="view" id="view-team" hidden>
+      <h2>Team</h2>
+      <section class="card" aria-labelledby="h-add">
+        <h3 id="h-add">Add an agent</h3>
+        <form class="stack" id="agentForm" novalidate>
+          <div class="grid2">
+            <div class="field"><label for="a-name">Agent name</label><input type="text" id="a-name" autocomplete="off" maxlength="60" placeholder="e.g. Murugan"></div>
+            <div class="field"><label for="a-id">Login ID</label><input type="text" id="a-id" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="24" placeholder="made from the name"></div>
+          </div>
+          <div class="field"><label for="a-pw">Password</label>
+            <div class="pwrow"><input type="text" id="a-pw" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="32"><button type="button" class="btn sm" id="a-regen">New password</button></div>
+            <p class="note-line">The app makes a password for you. You can type your own (8 or more characters).</p></div>
+          <div class="msg bad" id="agentMsg" role="alert"></div>
+          <button class="btn primary" type="submit" id="agentBtn">Create agent login</button>
+        </form>
+        <div class="cred" id="credBox" hidden></div>
+      </section>
+      <section class="card">
+        <h3>Your agents</h3>
+        <div class="list" id="teamList"></div>
+        <p class="note-line">A password cannot be read back or reset. If an agent forgets it, turn that ID off and add the agent again with a new ID.</p>
+      </section>
+    </section>
+
+    <!-- TOOLS -->
+    <section class="view" id="view-tools" hidden>
+      <h2>Tools</h2>
+      <section class="card" aria-labelledby="h-conv">
+        <h3 id="h-conv">Land converter</h3>
+        <div class="grid2">
+          <div class="field"><label for="c-val">Value</label><input type="number" id="c-val" inputmode="decimal" step="0.01" min="0" value="10.4"></div>
+          <div class="field"><span class="lab" id="lab-cunit">From</span>
+            <div class="seg" id="c-unit" role="radiogroup" aria-labelledby="lab-cunit"><button type="button" data-v="Acre">Acre</button><button type="button" data-v="Cent">Cent</button><button type="button" data-v="Hectare">Hectare</button></div></div>
+        </div>
+        <div class="conv-out num" id="convOut"></div>
+        <p class="note-line">1 hectare = 2.47105 acres. 1 acre = 100 cents.</p>
+      </section>
+      <section class="card" aria-labelledby="h-acc">
+        <h3 id="h-acc">My account</h3>
+        <div class="kv"><span>Name</span><b id="acName"></b></div>
+        <div class="kv"><span>Login ID</span><b id="acId"></b></div>
+        <form class="stack" id="pwForm" novalidate>
+          <div class="field"><label for="p-old">Current password</label><input type="password" id="p-old" autocomplete="current-password" maxlength="64"></div>
+          <div class="field"><label for="p-new">New password <span class="opt">at least 8 characters</span></label><input type="password" id="p-new" autocomplete="new-password" maxlength="64"></div>
+          <div class="msg bad" id="pwMsg" role="alert"></div>
+          <button class="btn" type="submit" id="pwBtn">Change my password</button>
+        </form>
+        <button class="btn danger" type="button" id="signOutBtn">Sign out</button>
+      </section>
+    </section>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script src="firebase-config.js"></script>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-firestore-compat.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

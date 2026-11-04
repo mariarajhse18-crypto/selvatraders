@@ -1,0 +1,126 @@
+செல்வா டிரேடர்ஸ் பயிர் காப்பீடு - ID மற்றும் பாஸ்வேர்டு உள்ள தனிப்பட்ட ஆப்
+=====================================================================
+
+இதில் என்ன கிடைக்கும்
+  - ID, பாஸ்வேர்டு உள்ளவர்கள் மட்டுமே திறக்கக்கூடிய Android ஆப் (APK).
+  - நீங்கள் Owner. ஒவ்வொரு agent-க்கும் ID, பாஸ்வேர்டு ஆப்புக்குள்ளேயே (Team tab) உருவாக்குவீர்கள்.
+  - Agent-கள் விவசாயிகளைச் சேர்க்கலாம், தாங்கள் சேர்த்த விவசாயிகளைத் திருத்தலாம்.
+    Bill value, margin ஆகியவற்றைப் பார்க்க முடியாது. Record-ஐ delete செய்ய முடியாது. Team tab தெரியாது.
+  - உங்களுக்கு எல்லாம் தெரியும்: bill value, margin, ஒவ்வொரு agent-ன் summary.
+  - சிக்னல் குறைவாக இருந்தாலும் வேலை செய்யும். புதிய விவசாயி போனில் சேமிக்கப்படும்,
+    இணையம் வந்ததும் தானாக upload ஆகும்.
+
+தேவையானவை: Google account, இலவச GitHub account, இணையம் உள்ள Windows PC.
+Android Studio தேவையில்லை. கோடிங் தெரிய வேண்டாம். முதல் முறை சுமார் 45 நிமிடம் ஆகும்.
+
+இந்த folder-ல் உள்ள கோப்புகளில் www\firebase-config.js ஒன்றை மட்டுமே மாற்ற வேண்டும்.
+
+
+பகுதி A - FIREBASE அமைப்பது (ஆன்லைன் database மற்றும் login) - இலவச plan
+---------------------------------------------------------------------------
+https://console.firebase.google.com திறந்து உங்கள் Google account-ல் நுழையுங்கள்.
+
+1. "Create a project" அழுத்துங்கள். பெயர்: selva-traders. Google Analytics-ஐ OFF செய்யுங்கள். Create அழுத்துங்கள்.
+
+2. இடது மெனு: Build > Authentication > "Get started".
+   "Email/Password" அழுத்துங்கள். முதல் switch-ஐ மட்டும் ON செய்யுங்கள் ("Email link" வேண்டாம்). Save அழுத்துங்கள்.
+
+3. இடது மெனு: Build > Firestore Database > "Create database".
+   Location: asia-south1 (Mumbai). "Start in production mode" தேர்ந்தெடுங்கள். Create அழுத்துங்கள்.
+
+4. Firestore-ல் "Rules" tab திறங்கள்.
+   பெட்டியில் உள்ள எல்லாவற்றையும் அழியுங்கள். இந்த folder-ல் உள்ள firestore.rules கோப்பை Notepad-ல் திறந்து,
+   எல்லாவற்றையும் copy செய்து பெட்டியில் paste செய்யுங்கள். "Publish" அழுத்துங்கள்.
+
+5. மேல்-இடது gear icon > Project settings > General.
+   "Your apps" வரை scroll செய்யுங்கள். web icon  </>  அழுத்துங்கள்.
+   App nickname: selva-app. "Firebase Hosting" tick செய்ய வேண்டாம். "Register app" அழுத்துங்கள்.
+   firebaseConfig என்ற பெட்டியில் 6 மதிப்புகள் தெரியும் (apiKey, authDomain, projectId,
+   storageBucket, messagingSenderId, appId). இந்தப் பக்கத்தை மூட வேண்டாம்.
+
+6. www\firebase-config.js கோப்பை Notepad-ல் திறங்கள்.
+   PASTE_... என்று உள்ள ஒவ்வொரு மதிப்பையும் Firebase-ல் உள்ள அதே மதிப்பால் மாற்றுங்கள். மேற்கோள் குறிகளை ("") அழிக்க வேண்டாம்.
+   Save செய்யுங்கள்.
+
+
+பகுதி B - GITHUB மூலம் APK உருவாக்குவது (இலவசம், எதுவும் install செய்ய வேண்டாம்)
+--------------------------------------------------------------------------------
+7. https://github.com சென்று sign up செய்யுங்கள் (இலவசம்). "New repository" அழுத்துங்கள்.
+   பெயர்: selva-traders. "Private" தேர்ந்தெடுங்கள். "Create repository" அழுத்துங்கள்.
+
+8. "uploading an existing file" அழுத்துங்கள். PC-ல் இந்த folder-ஐத் திறந்து, உள்ளே இருக்கும் எல்லாவற்றையும்
+   (www folder, resources folder, scripts folder, package.json, capacitor.config.json,
+   firestore.rules மற்றும் மற்ற கோப்புகள்) தேர்ந்தெடுத்து GitHub பக்கத்தில் drag செய்து போடுங்கள். Upload முடியும் வரை காத்திருங்கள்.
+   "Commit changes" அழுத்துங்கள்.
+
+   பிறகு கோப்பு பட்டியலைப் பாருங்கள். ".github" என்ற folder தெரியவில்லை என்றால் கையால் சேர்க்கவும்:
+     Add file > Create new file. பெயர் பெட்டியில் இதை type செய்யுங்கள்:  .github/workflows/build-apk.yml
+     (slash type செய்தால் folder-கள் உருவாகும்). இந்த folder-ல் உள்ள build-apk.yml கோப்பை Notepad-ல் திறந்து,
+     எல்லாவற்றையும் copy செய்து paste செய்யுங்கள். "Commit changes" அழுத்துங்கள்.
+
+9. "Actions" tab அழுத்துங்கள். GitHub கேட்டால் பச்சை button அழுத்தி workflows-ஐ enable செய்யுங்கள்.
+   இடதுபுறம் "Build APK" அழுத்துங்கள், பிறகு "Run workflow" > "Run workflow".
+   பச்சை tick தெரியும் வரை 6 முதல் 10 நிமிடம் காத்திருங்கள்.
+   முடிந்த run-ஐ அழுத்துங்கள். கீழே "Artifacts" என்பதன் கீழ் "SelvaTraders-APK" அழுத்தி download செய்யுங்கள்.
+   Unzip செய்யுங்கள். உள்ளே app-debug.apk இருக்கும். அதுதான் உங்கள் ஆப்.
+
+   சிவப்பு X தெரிந்தால்: அந்த run-ஐ அழுத்தி, சிவப்பு X உள்ள step-ஐ அழுத்தி, அங்குள்ள சிவப்பு எழுத்தை எனக்கு அனுப்புங்கள்.
+   பொதுவான காரணம்: firebase-config.js-ல் தவறான மதிப்பு.
+
+
+பகுதி C - INSTALL செய்து தொடங்குவது
+------------------------------------
+10. app-debug.apk-ஐ உங்கள் போனுக்கு அனுப்புங்கள் (WhatsApp-ல் உங்களுக்கே அனுப்பலாம், அல்லது USB cable). அதை அழுத்துங்கள்.
+    "Install unknown apps" அனுமதி கேட்கும். அனுமதியுங்கள். Install அழுத்துங்கள்.
+    Google Play Protect எச்சரித்தால் "Install anyway" அழுத்துங்கள். Play Store-ல் இல்லாத ஆப்களுக்கு இது வழக்கமானதே.
+
+11. ஆப்பைத் திறங்கள். "First time? Set up the owner account" அழுத்துங்கள்.
+    உங்கள் பெயர், Owner ID (எ.கா: owner), 8 அல்லது அதற்கு மேல் எழுத்துள்ள பாஸ்வேர்டு கொடுங்கள்.
+    வேறு யாருக்கும் APK அனுப்புவதற்கு முன்பே இதைச் செய்யுங்கள். முதலில் setup செய்பவரே Owner ஆவார்.
+
+12. Team tab திறங்கள். Agent பெயரை type செய்யுங்கள். ஆப் ID-ஐ பரிந்துரைத்து, பாஸ்வேர்டை உருவாக்கும்.
+    "Create agent login" அழுத்துங்கள். "Copy ID and password" அழுத்தி, WhatsApp-ல் agent-க்கு paste செய்து அனுப்புங்கள்.
+    அதே APK கோப்பையும் agent-க்கு அனுப்புங்கள். அவர் install செய்து sign in செய்வார்.
+
+2 முதல் 5 agent-களுக்கும் படி 12-ஐ மீண்டும் செய்யுங்கள்.
+
+
+தினசரி பயன்பாடு
+-----------------
+  Agent: New farmer tab > படிவத்தை நிரப்பி > Save. தாங்கள் சேர்த்த விவசாயிகளைப் பார்க்கவும் திருத்தவும் Records tab.
+  நீங்கள்: Records tab-ல் எல்லோருடைய record-களும் தெரியும். ஒவ்வொரு record-லும் bill value type செய்தால் margin தெரியும்.
+          Summary tab-ல் ஒவ்வொரு agent-ன் விவசாயிகள், ஏக்கர், cash, UPI, உங்கள் margin தெரியும்.
+          Records tab-ல் Export CSV அழுத்தினால் கோப்பை WhatsApp, Drive அல்லது Gmail-க்கு அனுப்பலாம்.
+
+
+தெரிந்து கொள்ள வேண்டியவை
+------------------------
+  பாஸ்வேர்டு மறந்துவிட்டால்
+    பாஸ்வேர்டை யாராலும் பார்க்கவோ reset செய்யவோ முடியாது, உங்களாலும் முடியாது. Agent மறந்துவிட்டால்,
+    Team-ல் அந்த ID-க்கு "Turn off" அழுத்தி, புதிய ID-யுடன் agent-ஐ மீண்டும் சேருங்கள். பழைய விவசாயிகள் அப்படியே இருக்கும்.
+    நீங்களே Owner பாஸ்வேர்டை மறந்தால்: Firebase console-ல் Authentication > Users சென்று owner user-ஐ delete செய்யுங்கள்;
+    பிறகு Firestore Database > Data சென்று meta > owner document-ஐயும், users-ல் உள்ள owner-ன் document-ஐயும் delete செய்யுங்கள்;
+    பிறகு ஆப்பைத் திறந்து owner-ஐ மீண்டும் setup செய்யுங்கள். Record-கள் அழியாது.
+
+  Agent-ஐ நீக்குவது
+    Team > Turn off. அவர் உடனே sign out ஆகி உள்ளே வர முடியாது. Turn on செய்தால் மீண்டும் வரலாம்.
+
+  பிறகு ஆப்பை update செய்வது
+    கோப்புகளை மாற்றி, அதே GitHub repository-ல் upload செய்து, "Build APK"-ஐ மீண்டும் run செய்து,
+    புதிய app-debug.apk-ஐ agent-களுக்கு அனுப்புங்கள். பழைய ஆப் மேலேயே install செய்வார்கள். எதுவும் இழக்கப்படாது,
+    ஏனெனில் record-கள் APK-ல் இல்லை, Firebase-ல் உள்ளன. resources/debug.keystore கோப்பு repository-ல் இருக்க வேண்டும்,
+    இல்லையென்றால் update பழைய ஆப் மேல் install ஆகாது.
+
+  யார் எதைப் பார்க்க முடியும் (தெளிவாக அறியுங்கள்)
+    - Bill value, margin ஆகியவை database rules மூலம் பாதுகாக்கப்படுகின்றன. Agent-களின் போனுக்கு அவை அனுப்பப்படுவதே இல்லை.
+    - Agent-களின் போனுக்கு மற்ற agent-களின் அடிப்படை விவசாயி record-கள் வந்து சேரும். ஒரே விவசாயியை இருமுறை
+      பதிவு செய்தால் ஆப் எச்சரிக்க இது உதவுகிறது. ஆப் ஒவ்வொரு agent-க்கும் அவருடைய விவசாயிகளை மட்டுமே காட்டும்.
+    - Update சுலபமாக install ஆக debug signing key சேர்க்கப்பட்டுள்ளது. இது ரகசியம் அல்ல. உங்கள் சொந்தக் குழுவுக்கு மட்டும்
+      அனுப்பும் ஆப்புக்கு இது போதும். இந்த APK-ஐ Play Store-ல் போட வேண்டாம்.
+
+  செலவு
+    2 முதல் 5 பேர் கொண்ட குழுவுக்கு Firebase இலவச plan (Spark) மற்றும் GitHub இலவச plan போதும்.
+
+  உண்மையான போனில் சோதிக்கப்படவில்லை
+    திரைகளும் sign-in லாஜிக்கும் browser-ல் சோதிக்கப்பட்டன. APK build-உம் database rules-உம் உங்கள் Firebase,
+    GitHub account-களில்தான் முதல் முறை இயங்கும். ஏதேனும் வேலை செய்யவில்லை என்றால், பிழையின் screenshot-ஐ எனக்கு அனுப்புங்கள்.

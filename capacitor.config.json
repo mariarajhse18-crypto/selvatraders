@@ -1,0 +1,8 @@
+{
+  "appId": "com.selvatraders.cropinsurance",
+  "appName": "Selva Traders",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#154621"
+  }
+}

@@ -1,0 +1,65 @@
+name: Build APK
+
+# Runs only when you press "Run workflow" on the Actions tab.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the files
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install packages
+        run: npm install --no-audit --no-fund
+
+      - name: Copy Firebase files into the app
+        run: npm run vendor
+
+      - name: Check Firebase settings were filled in
+        run: |
+          if grep -q "PASTE_" www/firebase-config.js; then
+            echo "www/firebase-config.js still has PASTE_ values. Fill it in and upload it again."
+            exit 1
+          fi
+
+      - name: Create the Android project
+        run: npx cap add android
+
+      - name: Use the Selva Traders icon
+        run: |
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
+          for d in resources/icons/mipmap-*; do
+            cp "$d"/*.png "android/app/src/main/res/$(basename "$d")/"
+          done
+
+      - name: Copy the app into the Android project
+        run: npx cap sync android
+
+      - name: Use the same signing key every time
+        run: |
+          mkdir -p ~/.android
+          cp resources/debug.keystore ~/.android/debug.keystore
+
+      - name: Build the APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Keep the APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SelvaTraders-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

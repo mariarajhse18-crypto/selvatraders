@@ -1,0 +1,24 @@
+/* Sign-in screen, team list and the extra pieces the login version adds. */
+.auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:linear-gradient(var(--head) 0,var(--head) 140px,var(--bg) 140px)}
+.auth[hidden]{display:none}
+.auth-card{width:100%;max-width:420px;gap:16px;box-shadow:0 12px 32px -18px rgba(0,0,0,.45)}
+.auth-logo{width:120px;max-width:40%;height:auto;display:block;margin:-62px auto 0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.auth-card h2{text-align:center}
+.center{text-align:center}
+.pwrow{display:flex;gap:8px;align-items:stretch}
+.pwrow input{flex:1;min-width:0}
+.btn.linkish{border:0;background:none;color:var(--brand);text-decoration:underline;min-height:40px}
+#app[hidden]{display:none}
+.cred{border:2px dashed var(--gold);border-radius:12px;padding:14px;margin-top:14px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
+.cred[hidden]{display:none}
+.cred .big{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:1.15rem;font-weight:700;overflow-wrap:anywhere;user-select:all}
+.cred .row2{display:flex;gap:8px;flex-wrap:wrap}
+.member{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.member .nm{font-family:var(--font-display);font-weight:700;overflow-wrap:anywhere}
+.member .sub{font-size:.82rem;color:var(--muted)}
+.member.off{opacity:.65}
+.st-off{background:var(--bad-bg);color:var(--bad)}
+.st-owner{background:var(--gold);color:var(--on-gold)}
+.pill.sync{background:var(--warn-bg);color:var(--warn)}
+.chip[disabled]{opacity:.6;cursor:default}
+@media (min-width:820px){.auth{background:linear-gradient(var(--head) 0,var(--head) 40%,var(--bg) 40%)}}

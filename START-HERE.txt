@@ -1,0 +1,126 @@
+SELVA TRADERS CROP INSURANCE - PRIVATE APP WITH LOGIN
+=====================================================
+
+What you get
+  - An Android app (APK) that only people with an ID and password can open.
+  - You are the Owner. You make an ID and password for each agent inside the app (Team tab).
+  - Agents can add farmers and edit their own farmers. They cannot see bill values or margins,
+    and they cannot delete records or see the Team tab.
+  - You see everything: bill values, margins, every agent's summary.
+  - Works with weak signal. A new farmer is saved on the phone and uploads when internet returns.
+
+You need: a Google account, a free GitHub account, a Windows PC with internet.
+You do NOT need Android Studio or any coding. Time: about 45 minutes the first time.
+
+The files are the same ones the app is built from. Do not change them except firebase-config.js.
+
+
+PART A - SET UP FIREBASE (the online database and login) - free plan
+---------------------------------------------------------------------
+Open https://console.firebase.google.com and sign in with your Google account.
+
+1. Click "Create a project". Name it: selva-traders. Turn OFF Google Analytics. Click Create.
+
+2. Left menu: Build > Authentication > "Get started".
+   Click "Email/Password". Turn ON the first switch only (not "Email link"). Click Save.
+
+3. Left menu: Build > Firestore Database > "Create database".
+   Location: asia-south1 (Mumbai). Choose "Start in production mode". Click Create.
+
+4. In Firestore, open the "Rules" tab.
+   Delete everything in the box. Open the file firestore.rules from this folder in Notepad,
+   copy everything, paste it into the box. Click "Publish".
+
+5. Click the gear icon (top left) > Project settings > General.
+   Scroll to "Your apps". Click the web icon  </>
+   App nickname: selva-app. Do NOT tick "Firebase Hosting". Click "Register app".
+   You will see a block called firebaseConfig with 6 values (apiKey, authDomain, projectId,
+   storageBucket, messagingSenderId, appId). Keep this page open.
+
+6. Open the file  www\firebase-config.js  in Notepad.
+   Replace every PASTE_... value with the matching value from Firebase. Keep the quotes.
+   Save the file.
+
+
+PART B - BUILD THE APK USING GITHUB (free, no installs)
+--------------------------------------------------------
+7. Go to https://github.com and sign up (free). Click "New repository".
+   Name: selva-traders. Choose "Private". Click "Create repository".
+
+8. Click "uploading an existing file". Open this folder on your PC, select everything inside it
+   (the www folder, resources folder, scripts folder, package.json, capacitor.config.json,
+   firestore.rules and the other files) and drag it into the GitHub page. Wait for the upload.
+   Click "Commit changes".
+
+   Then check the file list. If you do not see a folder named ".github", add it by hand:
+     Add file > Create new file. In the name box type:  .github/workflows/build-apk.yml
+     (typing the slashes makes the folders). Open build-apk.yml from this folder in Notepad,
+     copy everything, paste it in. Click "Commit changes".
+
+9. Click the "Actions" tab. If GitHub asks, click the green button to enable workflows.
+   Click "Build APK" on the left, then "Run workflow" > "Run workflow".
+   Wait 6 to 10 minutes until you see a green tick.
+   Click the finished run. At the bottom, under "Artifacts", click "SelvaTraders-APK" to download.
+   Unzip it. Inside is  app-debug.apk  - that is your app.
+
+   If you see a red X: click the run, click the step with the red X, and send me the red text.
+   The most common cause is a wrong value in firebase-config.js.
+
+
+PART C - INSTALL AND START
+---------------------------
+10. Send app-debug.apk to your phone (WhatsApp to yourself, or USB cable). Tap it.
+    Android asks to allow "Install unknown apps" for that app. Allow it. Tap Install.
+    If Google Play Protect warns, tap "Install anyway". This is normal for apps not on Play Store.
+
+11. Open the app. Tap "First time? Set up the owner account".
+    Enter your name, an Owner ID (for example: owner) and a password of 8 or more characters.
+    DO THIS BEFORE you send the APK to anyone else. The first person to set up becomes the owner.
+
+12. Open the Team tab. Type the agent name. The app suggests an ID and makes a password.
+    Tap "Create agent login". Tap "Copy ID and password" and paste it to the agent on WhatsApp.
+    Send the agent the same APK file. They install it and sign in.
+
+Repeat step 12 for each agent (2 to 5 people).
+
+
+EVERY DAY USE
+-------------
+  Agents: New farmer tab > fill the form > Save. Records tab to see and correct their own farmers.
+  You:    Records tab shows everyone. Type the bill value on each record to see your margin.
+          Summary tab shows each agent's farmers, acres, cash and UPI, and your margin.
+          Export CSV on the Records tab sends a file to WhatsApp, Drive or Gmail.
+
+
+THINGS TO KNOW
+--------------
+  Forgotten password
+    Nobody can read or reset a password, not even you. If an agent forgets it, open Team, tap
+    "Turn off" on that ID, then add the agent again with a new ID. Their old farmers stay.
+    If YOU forget the owner password: in the Firebase console, Authentication > Users, delete the
+    owner user; then Firestore Database > Data, delete the document meta > owner and the owner's
+    document under users; then open the app and set up the owner again. Records are not lost.
+
+  Removing an agent
+    Team > Turn off. They are signed out at once and cannot get in. Turn on brings them back.
+
+  Updating the app later
+    Change the files, upload them to the same GitHub repository, run "Build APK" again, and send
+    the new app-debug.apk to your agents. They install it over the old one. Nothing is lost,
+    because the records live in Firebase, not in the APK. The file resources/debug.keystore must
+    stay in the repository, or the update will not install over the old app.
+
+  Who can read what (be clear about this)
+    - Bill values and margins are protected by the database rules. Agents' phones are never sent them.
+    - Agents' phones DO receive the basic farmer records of other agents. This lets the app warn
+      about a farmer entered twice. The app only shows an agent their own farmers.
+    - The debug signing key is included so updates install cleanly. It is not secret. This is fine
+      for an app you send only to your own team. Do not put this APK on the Play Store.
+
+  Cost
+    Firebase free plan (Spark) and GitHub free plan are enough for a team of 2 to 5 people.
+
+  Not tested on a real phone
+    The screens and sign-in logic were tested in a browser. The APK build and the database rules
+    run for the first time on your Firebase and GitHub accounts. If anything does not work, send
+    me a screenshot of the error.

@@ -1,0 +1,95 @@
+rules_version = '2';
+
+// Selva Traders Crop Insurance
+// Paste this whole file into Firebase console > Firestore Database > Rules > Publish.
+//
+// Who can do what
+//   Owner (role "admin"): everything, including bill values (costs) and the Team list.
+//   Agent  (role "agent"): add farmers, edit their own farmers. Cannot see bill values,
+//                          cannot delete, cannot see the Team list.
+//   Anyone else (no profile, or turned off): nothing.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function hasProfile() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isActive() {
+      return hasProfile() && profile().active == true;
+    }
+    function isAdmin() {
+      return isActive() && profile().role == 'admin';
+    }
+
+    // One document that records who the owner is. It can be written once, ever.
+    match /meta/owner {
+      allow get: if true;
+      allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/meta/owner)
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+
+      // First run only: the person setting up the app becomes the owner.
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.role == 'admin'
+        && request.resource.data.active == true
+        && !exists(/databases/$(database)/documents/meta/owner)
+        && existsAfter(/databases/$(database)/documents/meta/owner)
+        && getAfter(/databases/$(database)/documents/meta/owner).data.uid == uid;
+
+      // The owner adds agents.
+      allow create: if isAdmin()
+        && request.resource.data.role == 'agent'
+        && request.resource.data.active == true;
+
+      // The owner turns an agent on or off. Roles cannot change. The owner cannot turn themselves off.
+      allow update: if isAdmin()
+        && uid != request.auth.uid
+        && request.resource.data.role == resource.data.role;
+
+      allow delete: if false;
+    }
+
+    match /entries/{id} {
+      allow read: if isActive();
+
+      allow create: if isActive()
+        && request.resource.data.agentUid == request.auth.uid
+        && request.resource.data.farmer is string
+        && request.resource.data.farmer.size() > 0
+        && request.resource.data.farmer.size() <= 80
+        && request.resource.data.collection is number
+        && request.resource.data.collection >= 0
+        && request.resource.data.land is number
+        && request.resource.data.land > 0;
+
+      allow update: if isActive()
+        && (isAdmin() || resource.data.agentUid == request.auth.uid)
+        && request.resource.data.agentUid == resource.data.agentUid;
+
+      allow delete: if isAdmin();
+    }
+
+    // Bill values. Only the owner can read or write them.
+    match /costs/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
