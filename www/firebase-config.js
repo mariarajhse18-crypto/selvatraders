@@ -1,11 +1,10 @@
-// Paste your Firebase web app settings here.
-// Firebase console > Project settings (gear icon) > General > Your apps > Web app > "Config".
-// Replace every PASTE_... value. Keep the quotes. These values are not secret.
+// Firebase web app settings for the project "CROP 2026 - SELVATRADERS".
+// These values are not secret. Access is controlled by firestore.rules and by sign-in.
 window.FIREBASE_CONFIG = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_PROJECT_ID.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID"
+  apiKey: "AIzaSyAATcLBDxb_X1heVuNmBp9SIQCsXP8zaBg",
+  authDomain: "crop-2026---selvatraders.firebaseapp.com",
+  projectId: "crop-2026---selvatraders",
+  storageBucket: "crop-2026---selvatraders.firebasestorage.app",
+  messagingSenderId: "506140639028",
+  appId: "1:506140639028:web:ef89fc13fd6b59e88bef61"
 };
